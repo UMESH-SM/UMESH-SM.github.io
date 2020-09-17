@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+    <title>TODO</title>
+</head>
+
+<body>
+
+    <div class="container text-center">
+        <h1 class="text-center my-4"><b>TODO List</b></h1>
+        <div class="form-group ">
+            <label for="name">Item Name</label>
+            <input type="text" class="form-control" id="name" placeholder="">
+        </div>
+
+        <div class="form-group">
+            <label for="desc">Description</label>
+            <textarea class="form-control" id="desc" rows="3"></textarea>
+        </div>
+        <button class="btn btn-primary my-2" onclick="addItem()">Submit</button>
+        <button class="btn btn-primary" onclick="clearAll()">Clear All</button>
+
+        <div class="listedItems my-4">
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Item Name</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="listTable">
+                    <tr>
+                        
+                        <td colspan="4">List is empty.</td>
+                       
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
+
+    <script>
+
+        function addItem() {
+            let name = document.getElementById('name').value;
+            let desc = document.getElementById('desc').value;
+
+            if (localStorage.getItem('listJson') == null) {
+                let listJsonArray = [];
+                listJsonArray.push([name, desc]);
+                localStorage.setItem("listJson", JSON.stringify(listJsonArray));
+            }
+            else {
+                listJsonArrayStr = localStorage.getItem("listJson");
+                listJsonArray = JSON.parse(listJsonArrayStr);
+                listJsonArray.push([name, desc]);
+                localStorage.setItem("listJson", JSON.stringify(listJsonArray));
+            }
+
+            update();
+        }
+
+        function update() {
+            if(localStorage.length == 0){
+                document.getElementById('listTable').innerHTML = `<td colspan="4">List is empty.</td>`;
+            }
+            else if(localStorage.getItem('listJson').length == 2 || localStorage.getItem('listJson') == null){
+                document.getElementById('listTable').innerHTML = `<td colspan="4">List is empty.</td>`;
+            }
+            else{
+                listJsonArrayStr = localStorage.getItem("listJson");
+                listJsonArray = JSON.parse(listJsonArrayStr);
+                let str = '';
+                listJsonArray.forEach((element, index) => {
+                    str += `<tr>
+                            <th scope="row">${index + 1}</th>
+                            <td>${element[0]}</td>
+                            <td>${element[1]}</td>
+                            <td><button class="btn btn-primary" onclick="deleteItem(${index})">Delete</button></td>
+                            </tr>`
+                });
+                document.getElementById('listTable').innerHTML = str;
+            }
+
+        }
+
+        function deleteItem(itemIndex){
+            listJsonArrayStr = localStorage.getItem("listJson");
+            listJsonArray = JSON.parse(listJsonArrayStr);
+            listJsonArray.splice(itemIndex,1);
+            localStorage.setItem("listJson", JSON.stringify(listJsonArray));
+            update();
+        }
+
+        function clearAll(){
+            if(confirm('Are you sure?')){
+                localStorage.clear();
+            }
+            update();
+            
+        }
+
+        update();
+    </script>
+</body>
+
+</html>
